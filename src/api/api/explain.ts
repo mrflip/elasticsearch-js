@@ -46,12 +46,18 @@ export default async function ExplainApi<TDocument = unknown> (this: That, param
   const querystring: Record<string, any> = {}
   // @ts-expect-error
   const userBody: any = params?.body
+  const { id, index } = params
+  //
   let body: Record<string, any> | string
   if (typeof userBody === 'string') {
     body = userBody
   } else {
     body = userBody != null ? { ...userBody } : undefined
   }
+  
+  if ((! id) || (! index)) {
+    throw new Error(`ID and index are required, but id='${id}' and index='${index}' were sent`)
+  } 
 
   for (const key in params) {
     if (acceptedBody.includes(key)) {
@@ -63,6 +69,8 @@ export default async function ExplainApi<TDocument = unknown> (this: That, param
     } else if (key !== 'body') {
       // @ts-expect-error
       querystring[key] = params[key]
+    } else {
+      throw new Error(`Unknown key ${key} provided to explain`)
     }
   }
 
